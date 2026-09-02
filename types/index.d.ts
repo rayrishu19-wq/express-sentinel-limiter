@@ -6,6 +6,22 @@ export interface RateLimitInfo {
   retryAfter: number;
 }
 
+export type DynamicCostFunction = (req: Request) => number;
+export type KeyGeneratorFunction = (req: Request) => string;
+export type SkipFunction = (req: Request) => boolean | Promise<boolean>;
+export type OnRateLimitedHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+  info: RateLimitInfo
+) => void;
+
+export type RateLimitMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void>;
+
 export interface SentinelLimiterOptions {
   /**
    * Maximum capacity of the token bucket.
@@ -23,7 +39,7 @@ export interface SentinelLimiterOptions {
    * Number of tokens consumed per request, or a function returning the cost.
    * @default 1
    */
-  cost?: number | ((req: Request) => number);
+  cost?: number | DynamicCostFunction;
 
   /**
    * Optional ioredis client instance. If omitted, uses high-speed in-memory store.
@@ -39,22 +55,17 @@ export interface SentinelLimiterOptions {
   /**
    * Function to extract a unique identifier for the client (e.g. IP, API key, User ID).
    */
-  keyGenerator?: (req: Request) => string;
+  keyGenerator?: KeyGeneratorFunction;
 
   /**
    * Function to determine if a request should bypass rate limiting.
    */
-  skip?: (req: Request) => boolean | Promise<boolean>;
+  skip?: SkipFunction;
 
   /**
    * Custom response handler invoked when a client exceeds their rate limit.
    */
-  onRateLimited?: (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-    info: RateLimitInfo
-  ) => void;
+  onRateLimited?: OnRateLimitedHandler;
 
   /**
    * Whether to fail open and allow traffic if an unexpected store error occurs.
@@ -88,4 +99,14 @@ export declare class MemoryTokenBucketStore {
  */
 export declare function createSentinelLimiter(
   options?: SentinelLimiterOptions
-): (req: Request, res: Response, next: NextFunction) => Promise<void>;
+): RateLimitMiddleware;
+
+declare global {
+  namespace Express {
+    interface Request {
+      rateLimit?: RateLimitInfo & {
+        allowed: boolean;
+      };
+    }
+  }
+}
