@@ -11,9 +11,21 @@
     }
   },
   "scripts": {
-    "test": "node --test test/limiter.test.js",
+    "test": "node --test",
+    "test:watch": "node --test --watch",
     "example:basic": "node examples/basic.js",
-    "example:custom": "node examples/custom-key.js"
+    "example:custom": "node examples/custom-key.js",
+    "example:dynamic": "node examples/dynamic-cost.js",
+    "example:cluster": "node examples/redis-cluster.js"
+  },
+  "files": [
+    "src",
+    "types",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
   },
   "keywords": [
     "express",
