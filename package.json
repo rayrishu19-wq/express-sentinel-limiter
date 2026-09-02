@@ -1,0 +1,49 @@
+{
+  "name": "express-sentinel-limiter",
+  "version": "1.0.0",
+  "description": "Atomic Token-Bucket rate limiting middleware for Express.js powered by Redis Lua scripts with zero-downtime in-memory fallback.",
+  "main": "src/index.js",
+  "types": "types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "scripts": {
+    "test": "node --test test/limiter.test.js",
+    "example:basic": "node examples/basic.js",
+    "example:custom": "node examples/custom-key.js"
+  },
+  "keywords": [
+    "express",
+    "rate-limit",
+    "token-bucket",
+    "redis",
+    "lua",
+    "middleware",
+    "distributed",
+    "security",
+    "api-gateway",
+    "throttle"
+  ],
+  "author": "Rishu Ray <rayrishu19@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rayrishu19-wq/express-sentinel-limiter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rayrishu19-wq/express-sentinel-limiter/issues"
+  },
+  "homepage": "https://github.com/rayrishu19-wq/express-sentinel-limiter#readme",
+  "peerDependencies": {
+    "express": ">=4.16.0",
+    "ioredis": ">=4.0.0 || >=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "ioredis": {
+      "optional": true
+    }
+  }
+}
