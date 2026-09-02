@@ -1,12 +1,27 @@
 # 🛡️ express-sentinel-limiter
 
+[![CI](https://github.com/rayrishu19-wq/express-sentinel-limiter/actions/workflows/ci.yml/badge.svg)](https://github.com/rayrishu19-wq/express-sentinel-limiter/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18.0.0-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Tests](https://img.shields.io/badge/Tests-8%20passed-brightgreen.svg)]()
-[![Zero Dependencies](https://img.shields.io/badge/Dependencies-0%20runtime-success.svg)]()
+[![Dependencies](https://img.shields.io/badge/Dependencies-0%20runtime-success.svg)]()
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 > High-throughput, distributed **Token-Bucket rate limiter** middleware for Express.js, powered by atomic **Redis Lua scripts** with automatic zero-downtime in-memory fallback.
+
+---
+
+## 📑 Table of Contents
+- [Why express-sentinel-limiter?](#-why-express-sentinel-limiter)
+- [How It Works](#️-how-it-works)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Configuration Options](#-configuration-options)
+- [RFC Rate Limit Headers](#-rfc-rate-limit-headers)
+- [Advanced Usage](#-advanced-usage)
+- [Testing](#-running-tests)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
