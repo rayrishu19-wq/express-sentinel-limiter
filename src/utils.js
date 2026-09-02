@@ -1,7 +1,9 @@
 /**
- * Utility functions for express-sentinel-limiter
+ * Extracts client IP address supporting standard reverse proxy headers.
+ *
+ * @param {import('express').Request|Object} req - Incoming HTTP request
+ * @returns {string} Client IP address or fallback loopback
  */
-
 function getClientIp(req) {
   const forwarded = req.headers && req.headers['x-forwarded-for'];
   if (forwarded) {
@@ -10,11 +12,26 @@ function getClientIp(req) {
   return req.ip || (req.socket && req.socket.remoteAddress) || '127.0.0.1';
 }
 
+/**
+ * Default key generator constructing a namespaced Redis/store key by client IP.
+ *
+ * @param {import('express').Request|Object} req - Incoming HTTP request
+ * @param {string} [prefix='default'] - Rate limit namespace prefix
+ * @returns {string} Namespaced rate limit key
+ */
 function defaultKeyGenerator(req, prefix = 'default') {
   const ip = getClientIp(req);
   return `sentinel:ratelimit:${prefix}:${ip}`;
 }
 
+/**
+ * Sets standard RFC rate limit headers on the HTTP response.
+ *
+ * @param {import('express').Response|Object} res - HTTP response object
+ * @param {number} limit - Maximum bucket capacity
+ * @param {number} remaining - Tokens remaining in current window
+ * @param {number} [retryAfter=0] - Seconds to wait until next token replenishment
+ */
 function setRateLimitHeaders(res, limit, remaining, retryAfter = 0) {
   if (!res || typeof res.setHeader !== 'function') return;
 

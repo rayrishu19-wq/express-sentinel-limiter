@@ -63,6 +63,11 @@ class MemoryTokenBucketStore {
     }
   }
 
+  /**
+   * Resets rate-limiting bucket state.
+   *
+   * @param {string} [key] - Optional specific key to reset. If omitted, clears all active buckets.
+   */
   reset(key) {
     if (key) {
       this.buckets.delete(key);
@@ -71,6 +76,9 @@ class MemoryTokenBucketStore {
     }
   }
 
+  /**
+   * Stops background cleanup timer and clears all stored bucket instances.
+   */
   destroy() {
     clearInterval(this.cleanupTimer);
     this.buckets.clear();
