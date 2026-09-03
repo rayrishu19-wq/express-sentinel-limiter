@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: '📋 Contributing Guidelines'
+    url: https://github.com/rayrishu19-wq/express-sentinel-limiter/blob/main/CONTRIBUTING.md
+    about: Please review our pull request and contribution guidelines before submitting.
+  - name: '🔒 Security Policy & Vulnerability Reporting'
+    url: https://github.com/rayrishu19-wq/express-sentinel-limiter/blob/main/SECURITY.md
+    about: Read how to responsibly report security vulnerabilities.
