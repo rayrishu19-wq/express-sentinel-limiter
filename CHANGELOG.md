@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-09-03
+
+### Added
+- Standard IETF draft rate limit response headers support (`RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`).
+- `standardHeaders` option in `createSentinelLimiter` configuration (default `false`).
+- `legacyHeaders` option in `createSentinelLimiter` configuration to toggle `X-RateLimit-*` headers (default `true`).
+- Unit tests validating standalone and combined standard/legacy header output.
+
+---
+
 ## [1.0.0] - 2026-09-02
 
 ### Added

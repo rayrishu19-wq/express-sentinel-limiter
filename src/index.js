@@ -23,7 +23,9 @@ const LUA_TOKEN_BUCKET = fs.readFileSync(
  * @param {Function} [options.skip] Optional function returning true to skip rate limiting: (req) => boolean
  * @param {Function} [options.onRateLimited] Custom 429 handler: (req, res, next, info) => void
  * @param {boolean} [options.failOpen=true] If true, allows traffic if store encounters an unhandled error
- * @param {boolean} [options.setHeaders=true] Whether to set X-RateLimit headers
+ * @param {boolean} [options.setHeaders=true] Whether to set rate limit headers
+ * @param {boolean} [options.legacyHeaders=true] Whether to send X-RateLimit-* legacy headers
+ * @param {boolean} [options.standardHeaders=false] Whether to send RateLimit-* (IETF draft) headers
  * @returns {Function} Express middleware (req, res, next)
  */
 function createSentinelLimiter(options = {}) {
@@ -38,6 +40,8 @@ function createSentinelLimiter(options = {}) {
     onRateLimited = null,
     failOpen = true,
     setHeaders = true,
+    legacyHeaders = true,
+    standardHeaders = false,
   } = options;
 
   if (typeof limit !== 'number' || limit <= 0) {
@@ -118,7 +122,10 @@ function createSentinelLimiter(options = {}) {
 
     // Set standard RFC rate limit headers
     if (setHeaders) {
-      setRateLimitHeaders(res, limit, remainingTokens, retryAfter);
+      setRateLimitHeaders(res, limit, remainingTokens, retryAfter, {
+        legacyHeaders,
+        standardHeaders,
+      });
     }
 
     if (allowed) {
