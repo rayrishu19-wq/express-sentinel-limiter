@@ -26,17 +26,31 @@ function defaultKeyGenerator(req, prefix = 'default') {
 
 /**
  * Sets standard RFC rate limit headers on the HTTP response.
+ * Supports legacy X-RateLimit-* headers and modern standard IETF RateLimit-* headers.
  *
  * @param {import('express').Response|Object} res - HTTP response object
  * @param {number} limit - Maximum bucket capacity
  * @param {number} remaining - Tokens remaining in current window
  * @param {number} [retryAfter=0] - Seconds to wait until next token replenishment
+ * @param {Object} [options={}] - Header format options
+ * @param {boolean} [options.legacyHeaders=true] - Send X-RateLimit-* headers
+ * @param {boolean} [options.standardHeaders=false] - Send RateLimit-* (IETF draft) headers
  */
-function setRateLimitHeaders(res, limit, remaining, retryAfter = 0) {
+function setRateLimitHeaders(res, limit, remaining, retryAfter = 0, options = {}) {
   if (!res || typeof res.setHeader !== 'function') return;
 
-  res.setHeader('X-RateLimit-Limit', String(limit));
-  res.setHeader('X-RateLimit-Remaining', String(Math.max(0, remaining)));
+  const { legacyHeaders = true, standardHeaders = false } = options;
+
+  if (legacyHeaders) {
+    res.setHeader('X-RateLimit-Limit', String(limit));
+    res.setHeader('X-RateLimit-Remaining', String(Math.max(0, remaining)));
+  }
+
+  if (standardHeaders) {
+    res.setHeader('RateLimit-Limit', String(limit));
+    res.setHeader('RateLimit-Remaining', String(Math.max(0, remaining)));
+    res.setHeader('RateLimit-Reset', String(Math.max(0, retryAfter)));
+  }
 
   if (retryAfter > 0) {
     res.setHeader('Retry-After', String(retryAfter));

@@ -74,10 +74,22 @@ export interface SentinelLimiterOptions {
   failOpen?: boolean;
 
   /**
-   * Whether to send standard RFC rate limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After`).
+   * Whether to send rate limit headers.
    * @default true
    */
   setHeaders?: boolean;
+
+  /**
+   * Whether to send legacy RFC rate limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`).
+   * @default true
+   */
+  legacyHeaders?: boolean;
+
+  /**
+   * Whether to send modern standard IETF draft rate limit headers (`RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`).
+   * @default false
+   */
+  standardHeaders?: boolean;
 }
 
 export interface MemoryTokenBucketResult {

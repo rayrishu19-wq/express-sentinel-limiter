@@ -196,7 +196,9 @@ Content-Type: application/json
 | `skip` | `(req) => boolean` | `null` | Function returning `true` to bypass rate limiting. |
 | `onRateLimited` | `Function` | Default JSON | Custom handler invoked when limit is exceeded. |
 | `failOpen` | `boolean` | `true` | When `true`, allows requests if an unexpected store error occurs. |
-| `setHeaders` | `boolean` | `true` | Whether to append RFC `X-RateLimit-*` headers to responses. |
+| `setHeaders` | `boolean` | `true` | Whether to append rate limit headers to responses. |
+| `legacyHeaders` | `boolean` | `true` | Whether to send legacy `X-RateLimit-*` headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`). |
+| `standardHeaders` | `boolean` | `false` | Whether to send standard IETF draft `RateLimit-*` headers (`RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`). |
 
 ---
 

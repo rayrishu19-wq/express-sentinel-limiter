@@ -81,6 +81,40 @@ describe('Utils Unit Tests', () => {
       assert.equal(headers['Retry-After'], '15');
     });
 
+    test('should set standard IETF draft RateLimit-* headers when standardHeaders is true', () => {
+      const headers = {};
+      const res = {
+        setHeader(name, val) {
+          headers[name] = val;
+        },
+      };
+
+      setRateLimitHeaders(res, 100, 42, 5, { standardHeaders: true, legacyHeaders: false });
+      assert.equal(headers['RateLimit-Limit'], '100');
+      assert.equal(headers['RateLimit-Remaining'], '42');
+      assert.equal(headers['RateLimit-Reset'], '5');
+      assert.equal(headers['X-RateLimit-Limit'], undefined);
+      assert.equal(headers['X-RateLimit-Remaining'], undefined);
+      assert.equal(headers['Retry-After'], '5');
+    });
+
+    test('should set both legacy and standard headers when both are enabled', () => {
+      const headers = {};
+      const res = {
+        setHeader(name, val) {
+          headers[name] = val;
+        },
+      };
+
+      setRateLimitHeaders(res, 50, 10, 2, { standardHeaders: true, legacyHeaders: true });
+      assert.equal(headers['X-RateLimit-Limit'], '50');
+      assert.equal(headers['X-RateLimit-Remaining'], '10');
+      assert.equal(headers['RateLimit-Limit'], '50');
+      assert.equal(headers['RateLimit-Remaining'], '10');
+      assert.equal(headers['RateLimit-Reset'], '2');
+      assert.equal(headers['Retry-After'], '2');
+    });
+
     test('should not throw if res or setHeader is invalid', () => {
       assert.doesNotThrow(() => {
         setRateLimitHeaders(null, 100, 50, 0);

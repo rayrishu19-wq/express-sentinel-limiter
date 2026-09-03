@@ -172,4 +172,28 @@ describe('createSentinelLimiter Middleware Tests', () => {
       createSentinelLimiter({ windowMs: 0 });
     }, /must be a positive number/);
   });
+
+  test('should send standard IETF draft headers when standardHeaders is enabled', async () => {
+    const limiter = createSentinelLimiter({
+      limit: 5,
+      windowMs: 60000,
+      prefix: 'test-standard-headers',
+      standardHeaders: true,
+      legacyHeaders: false,
+    });
+
+    const { req, res } = createMockContext('5.5.5.5');
+    let nextCalled = false;
+
+    await limiter(req, res, () => {
+      nextCalled = true;
+    });
+
+    assert.equal(nextCalled, true);
+    assert.equal(res.headers['ratelimit-limit'], '5');
+    assert.equal(res.headers['ratelimit-remaining'], '4');
+    assert.equal(res.headers['ratelimit-reset'], '0');
+    assert.equal(res.headers['x-ratelimit-limit'], undefined);
+    assert.equal(res.headers['x-ratelimit-remaining'], undefined);
+  });
 });
