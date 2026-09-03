@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { MemoryTokenBucketStore } = require('./memoryStore');
-const { defaultKeyGenerator, setRateLimitHeaders } = require('./utils');
+const { getClientIp, defaultKeyGenerator, setRateLimitHeaders } = require('./utils');
 
 // Load atomic Lua script once at module initialization
 const LUA_TOKEN_BUCKET = fs.readFileSync(
@@ -59,7 +59,7 @@ function createSentinelLimiter(options = {}) {
   // Shared in-memory fallback store
   const memoryStore = new MemoryTokenBucketStore();
 
-  return async function sentinelLimiterMiddleware(req, res, next) {
+  async function sentinelLimiterMiddleware(req, res, next) {
     // Check if request should bypass rate limiting
     if (typeof skip === 'function') {
       try {
@@ -147,9 +147,30 @@ function createSentinelLimiter(options = {}) {
       retryAfterSeconds: retryAfter,
     });
   };
+
+  // Expose underlying in-memory store reference
+  sentinelLimiterMiddleware.store = memoryStore;
+
+  // Programmatic key reset helper for testing or admin unblock workflows
+  sentinelLimiterMiddleware.resetKey = async function resetKey(key) {
+    if (!key) return;
+    if (redis && typeof redis.del === 'function' && redis.status === 'ready') {
+      try {
+        await redis.del(key);
+      } catch (err) {
+        // Ignore redis del error on manual cleanup
+      }
+    }
+    memoryStore.reset(key);
+  };
+
+  return sentinelLimiterMiddleware;
 }
 
 module.exports = {
   createSentinelLimiter,
   MemoryTokenBucketStore,
+  getClientIp,
+  defaultKeyGenerator,
+  setRateLimitHeaders,
 };

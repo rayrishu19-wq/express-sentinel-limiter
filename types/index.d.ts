@@ -16,11 +16,11 @@ export type OnRateLimitedHandler = (
   info: RateLimitInfo
 ) => void;
 
-export type RateLimitMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => Promise<void>;
+export interface RateLimitMiddleware {
+  (req: Request, res: Response, next: NextFunction): Promise<void>;
+  store: MemoryTokenBucketStore;
+  resetKey: (key: string) => Promise<void>;
+}
 
 export interface SentinelLimiterOptions {
   /**
@@ -112,6 +112,32 @@ export declare class MemoryTokenBucketStore {
 export declare function createSentinelLimiter(
   options?: SentinelLimiterOptions
 ): RateLimitMiddleware;
+
+export interface RateLimitHeaderOptions {
+  legacyHeaders?: boolean;
+  standardHeaders?: boolean;
+}
+
+/**
+ * Extracts client IP address supporting standard reverse proxy headers.
+ */
+export declare function getClientIp(req: Request | any): string;
+
+/**
+ * Default key generator constructing a namespaced Redis/store key by client IP.
+ */
+export declare function defaultKeyGenerator(req: Request | any, prefix?: string): string;
+
+/**
+ * Sets standard RFC and IETF draft rate limit headers on the HTTP response.
+ */
+export declare function setRateLimitHeaders(
+  res: Response | any,
+  limit: number,
+  remaining: number,
+  retryAfter?: number,
+  options?: RateLimitHeaderOptions
+): void;
 
 declare global {
   namespace Express {

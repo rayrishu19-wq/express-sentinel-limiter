@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-09-03
+
+### Added
+- Exported core utility helpers `getClientIp`, `defaultKeyGenerator`, and `setRateLimitHeaders` directly from package root.
+- Attached underlying `store` reference to the returned limiter middleware instance.
+- Added programmatic `limiter.resetKey(key)` asynchronous helper for integration testing and administrator unblocking workflows.
+- Comprehensive TypeScript declaration updates for exported utilities and middleware properties.
+
+---
+
 ## [1.1.0] - 2026-09-03
 
 ### Added

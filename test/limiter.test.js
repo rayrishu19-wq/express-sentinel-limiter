@@ -1,6 +1,12 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { createSentinelLimiter, MemoryTokenBucketStore } = require('../src/index');
+const {
+  createSentinelLimiter,
+  MemoryTokenBucketStore,
+  getClientIp,
+  defaultKeyGenerator,
+  setRateLimitHeaders,
+} = require('../src/index');
 
 describe('MemoryTokenBucketStore Unit Tests', () => {
   test('should consume tokens and calculate remaining count', () => {
@@ -195,5 +201,46 @@ describe('createSentinelLimiter Middleware Tests', () => {
     assert.equal(res.headers['ratelimit-reset'], '0');
     assert.equal(res.headers['x-ratelimit-limit'], undefined);
     assert.equal(res.headers['x-ratelimit-remaining'], undefined);
+  });
+
+  test('should export utility functions from package entrypoint', () => {
+    assert.equal(typeof getClientIp, 'function');
+    assert.equal(typeof defaultKeyGenerator, 'function');
+    assert.equal(typeof setRateLimitHeaders, 'function');
+  });
+
+  test('should attach store reference and allow programmatic resetKey()', async () => {
+    const limiter = createSentinelLimiter({
+      limit: 1,
+      windowMs: 60000,
+      prefix: 'test-reset',
+    });
+
+    assert.ok(limiter.store instanceof MemoryTokenBucketStore);
+    assert.equal(typeof limiter.resetKey, 'function');
+
+    const { req: r1, res: s1 } = createMockContext('9.9.9.9');
+    const { req: r2, res: s2 } = createMockContext('9.9.9.9');
+
+    // First request passes
+    await limiter(r1, s1, () => {});
+    assert.equal(r1.rateLimit.allowed, true);
+
+    // Second request is blocked
+    await limiter(r2, s2, () => {});
+    assert.equal(s2.statusCode, 429);
+
+    // Reset key for this IP
+    const key = defaultKeyGenerator(r1, 'test-reset');
+    await limiter.resetKey(key);
+
+    // Third request passes after reset
+    const { req: r3, res: s3 } = createMockContext('9.9.9.9');
+    let nextRan = false;
+    await limiter(r3, s3, () => {
+      nextRan = true;
+    });
+    assert.equal(nextRan, true);
+    assert.equal(r3.rateLimit.allowed, true);
   });
 });
