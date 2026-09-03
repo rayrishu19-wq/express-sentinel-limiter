@@ -202,6 +202,25 @@ Content-Type: application/json
 
 ---
 
+### 🛠️ Programmatic Key Reset & Exported Utilities
+
+Developers can import core utilities or reset token quotas for specific keys programmatically:
+
+```javascript
+const {
+  createSentinelLimiter,
+  getClientIp,
+  defaultKeyGenerator,
+} = require('express-sentinel-limiter');
+
+const limiter = createSentinelLimiter({ limit: 100, prefix: 'api' });
+
+// Reset rate-limiting quota for an IP or specific key (works across memory & Redis)
+await limiter.resetKey('sentinel:ratelimit:api:192.168.1.100');
+```
+
+---
+
 ## 🧪 Testing
 
 The package includes an automated integration test suite with 100% native Node.js test runner:
